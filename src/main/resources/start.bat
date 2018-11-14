@@ -1,0 +1,1 @@
+java -jar test-ftp-1.0.0.jar

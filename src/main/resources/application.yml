@@ -1,0 +1,7 @@
+logging:
+  level:
+    com.hellozjf.test.testftp: info
+custom:
+  path: .\upload
+  waitTime: 500
+  waitCount: 3
