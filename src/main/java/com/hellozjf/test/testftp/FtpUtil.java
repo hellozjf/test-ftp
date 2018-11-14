@@ -19,7 +19,13 @@ import java.util.UUID;
 @Slf4j
 public class FtpUtil {
 
-    public boolean upload(String path, String filename) {
+    /**
+     * 将文件上传到uuid目录，并更换文件名
+     * @param path
+     * @param filename
+     * @return
+     */
+    public boolean uploadUUID(String path, String filename) {
         FTPClient ftp = new FTPClient();
         FTPClientConfig config = new FTPClientConfig();
         ftp.configure(config);
@@ -46,7 +52,7 @@ public class FtpUtil {
             }
 
             log.debug("changeWorkingDirectory");
-            if (!ftp.changeWorkingDirectory("/vdb1/uploads/")) {
+            if (!ftp.changeWorkingDirectory("/vdb1/uploads/uuid/")) {
                 log.error("changeWorkingDirectory failed!");
                 System.exit(1);
             }
@@ -65,7 +71,7 @@ public class FtpUtil {
             }
             in.close();
 
-            log.info("{} -> {}{}", filename, uuid, suffix);
+            log.info("{} -> uuid/{}{}", filename, uuid, suffix);
 
             ftp.logout();
         } catch (IOException e) {

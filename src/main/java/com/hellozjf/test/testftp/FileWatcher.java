@@ -115,7 +115,7 @@ public class FileWatcher {
                                     // update database ...
                                     log.debug("add file {} to ftp", fileName);
                                     // 将文件发送给FTP
-                                    ftpUtil.upload(path.toFile().getAbsolutePath(), fileName.toFile().getName());
+                                    ftpUtil.uploadUUID(path.toFile().getAbsolutePath(), fileName.toFile().getName());
                                 }
                             });
                         }
