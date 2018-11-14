@@ -63,6 +63,7 @@ public class FtpUtil {
                 log.error("storeFile failed!");
                 System.exit(1);
             }
+            in.close();
 
             log.info("{} -> {}{}", filename, uuid, suffix);
 
