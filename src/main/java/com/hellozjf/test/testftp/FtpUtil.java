@@ -71,11 +71,15 @@ public class FtpUtil {
             }
             in.close();
 
-            log.info("{} -> uuid/{}{}", filename, uuid, suffix);
+            String clipboardText = "uuid/" + uuid + suffix;
+            log.info("{} -> {}", filename, clipboardText);
+            ClipBoardUtil.setSysClipboardText(clipboardText);
 
             ftp.logout();
         } catch (IOException e) {
             error = true;
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             if (ftp.isConnected()) {

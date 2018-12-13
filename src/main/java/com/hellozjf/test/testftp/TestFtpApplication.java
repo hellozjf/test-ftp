@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 
 import javax.swing.*;
@@ -21,7 +22,10 @@ import java.nio.file.Paths;
 public class TestFtpApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(TestFtpApplication.class, args);
+        // springboot默认不开启图形界面，因此也无法使用剪切板，通过设置headless(false)开启图形界面
+        new SpringApplicationBuilder(TestFtpApplication.class)
+                .headless(false)
+                .run(args);
     }
 
     @Bean
