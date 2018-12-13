@@ -52,7 +52,7 @@ public class FtpUtil {
             }
 
             log.debug("changeWorkingDirectory");
-            if (!ftp.changeWorkingDirectory("/vdb1/uploads/uuid/")) {
+            if (!ftp.changeWorkingDirectory("/uploads/uuid/")) {
                 log.error("changeWorkingDirectory failed!");
                 System.exit(1);
             }
