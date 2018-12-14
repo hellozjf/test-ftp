@@ -1,1 +1,1 @@
-java -jar test-ftp-1.0.0.jar
+start javaw -jar test-ftp-1.0.3.jar
