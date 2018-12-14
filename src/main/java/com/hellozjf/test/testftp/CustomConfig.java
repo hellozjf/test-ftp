@@ -14,4 +14,5 @@ public class CustomConfig {
     private String path;
     private Integer waitTime;
     private Integer waitCount;
+    private String urlPrefix;
 }

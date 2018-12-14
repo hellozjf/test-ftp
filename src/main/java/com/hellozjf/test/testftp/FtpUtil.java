@@ -28,7 +28,7 @@ public class FtpUtil {
      * @param filename
      * @return
      */
-    public boolean uploadUUID(String path, String filename) {
+    public boolean uploadUUID(String urlPrefix, String path, String filename) {
         FTPClient ftp = new FTPClient();
         FTPClientConfig config = new FTPClientConfig();
         ftp.configure(config);
@@ -76,7 +76,7 @@ public class FtpUtil {
 
             String clipboardText = "uuid/" + uuid + suffix;
             log.info("{} -> {}", filename, clipboardText);
-            ClipBoardUtil.setSysClipboardText(clipboardText);
+            ClipBoardUtil.setSysClipboardText(urlPrefix + clipboardText);
 
             ftp.logout();
         } catch (IOException e) {
@@ -98,11 +98,12 @@ public class FtpUtil {
 
     /**
      * 将文件上传到对应日期目录，保持文件名
+     * @param urlPrefix
      * @param path
      * @param filename
      * @return
      */
-    public boolean uploadDateFolder(String path, String filename) {
+    public boolean uploadDateFolder(String urlPrefix, String path, String filename) {
         FTPClient ftp = new FTPClient();
         FTPClientConfig config = new FTPClientConfig();
         ftp.configure(config);
@@ -184,7 +185,7 @@ public class FtpUtil {
 
             String clipboardText = year + "/" + month + "/" + day + "/" + filename;
             log.info("{} -> {}", filename, clipboardText);
-            ClipBoardUtil.setSysClipboardText(clipboardText);
+            ClipBoardUtil.setSysClipboardText(urlPrefix + clipboardText);
 
             ftp.logout();
         } catch (IOException e) {

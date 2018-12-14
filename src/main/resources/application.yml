@@ -5,3 +5,4 @@ custom:
   path: .\upload
   waitTime: 500
   waitCount: 3
+  urlPrefix: https://aliyun.hellozjf.com:7004/uploads/
