@@ -6,3 +6,7 @@ custom:
   waitTime: 500
   waitCount: 3
   urlPrefix: https://aliyun.hellozjf.com:7004/uploads/
+baidu:
+  appid: 20190428000292257
+  key: 998XHTHKQcf2mrz0uIXH
+  salt: translate
