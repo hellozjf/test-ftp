@@ -98,14 +98,17 @@ public class SystemClipboardMonitor implements ClipboardOwner {
                 try {
                     text = new Formatter().formatSource(code.toString());
                 } catch (FormatterException e) {
+                    log.error("e = {}", e);
                     text = code.toString();
                 }
             }
 
             // 说明不是要格式化代码，那就执行翻译操作
             if (! match) {
-                text = text.replaceAll("[\\r\\n]", " ");
-                text = text.replaceAll("’", "'");
+                text = text.replaceAll("[\\r\\n]", " ")
+                        .replaceAll("’", "'")
+                        .replaceAll("”", "\"")
+                        .replaceAll("“", "\"");
                 if (! ChineseUtil.isChinese(text)) {
                     log.debug("text = {}", text);
                     text = translateService.translate(text);

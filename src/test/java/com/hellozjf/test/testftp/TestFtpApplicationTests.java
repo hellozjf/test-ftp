@@ -12,5 +12,4 @@ public class TestFtpApplicationTests {
     @Test
     public void contextLoads() {
     }
-
 }
