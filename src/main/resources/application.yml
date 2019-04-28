@@ -1,6 +1,7 @@
 logging:
   level:
     com.hellozjf.test.testftp: debug
+  file: log/output.log
 custom:
   path: .\upload
   waitTime: 500

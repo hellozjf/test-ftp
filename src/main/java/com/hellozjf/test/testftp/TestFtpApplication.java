@@ -46,7 +46,10 @@ public class TestFtpApplication {
      * @param fileWatcher
      * @param customConfig
      */
-    private void startFtp(FileWatcher fileWatcher, CustomConfig customConfig) throws IOException {
+    private void startFtp(FileWatcher fileWatcher,
+                          CustomConfig customConfig,
+                          TranslateService translateService,
+                          SystemClipboardMonitor systemClipboardMonitor) throws IOException {
 
         fileWatcher.setPath(customConfig.getPath());
         fileWatcher.handleEvents();
@@ -62,14 +65,21 @@ public class TestFtpApplication {
             ImageIcon icon = new ImageIcon(url);
             // 获得Image对象
             Image image = icon.getImage();
-            // 弹出窗口
             PopupMenu popupMenu = new PopupMenu();
-            popupMenu.add(new MenuItem("exit")).addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    System.exit(0);
-                }
+            // CheckBoxMenuItem，是否要复制开启翻译功能
+            CheckboxMenuItem enableTranslate = new CheckboxMenuItem("enable translate");
+            enableTranslate.addItemListener(e -> {
+                log.debug("e = {}", e);
+                systemClipboardMonitor.init();
             });
+            MenuItem exit = new MenuItem("exit");
+            exit.addActionListener(e -> {
+                log.debug("e = {}", e);
+                System.exit(0);
+            });
+            popupMenu.add(enableTranslate);
+            popupMenu.addSeparator();
+            popupMenu.add(exit);
             // 创建托盘图标
             TrayIcon trayIcon = new TrayIcon(image, "test-ftp持续为您服务", popupMenu);
             // 获得系统托盘对象
@@ -89,13 +99,10 @@ public class TestFtpApplication {
     @Bean
     public CommandLineRunner commandLineRunner(FileWatcher fileWatcher,
                                                CustomConfig customConfig,
-                                               TranslateService translateService) {
+                                               TranslateService translateService,
+                                               SystemClipboardMonitor systemClipboardMonitor) {
         return args -> {
-//            startFtp(fileWatcher, customConfig);
-            String translate = translateService.translate("Hello, my name is Zhou Jingfeng. I'm from China. I'm glad to see you.");
-            log.debug("translate = {}", translate);
-            // todo 我要把它做成，一复制就直接处理好换行并翻译好，放到粘贴板中
-            // todo 如果所有句子都是以数字开头，那么它就是代码，去掉数字并格式化好，放到粘贴板中
+            startFtp(fileWatcher, customConfig, translateService, systemClipboardMonitor);
         };
     }
 }
