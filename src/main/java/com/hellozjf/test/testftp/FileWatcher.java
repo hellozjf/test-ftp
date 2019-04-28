@@ -86,6 +86,7 @@ public class FileWatcher {
                             // 说明点1
                             // create a new thread to monitor the new file
                             executor.execute(() -> {
+
                                 File file = new File(path.toFile().getAbsolutePath() + "/" + fileName);
                                 boolean exist;
                                 long size = 0;

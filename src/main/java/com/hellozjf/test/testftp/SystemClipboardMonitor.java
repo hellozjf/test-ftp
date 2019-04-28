@@ -80,7 +80,7 @@ public class SystemClipboardMonitor implements ClipboardOwner {
 
             // 判断是否要格式化代码，如果每一行都是数字开头，说明就是代码
             StringBuilder code = new StringBuilder();
-            Pattern pattern = Pattern.compile("\\d+\\s*(.*)\\s*");
+            Pattern pattern = Pattern.compile("^\\s*\\d+\\s*(.*)\\s*$");
             String[] lines = text.split("\n");
             boolean match = true;
             for (String line : lines) {
@@ -105,16 +105,18 @@ public class SystemClipboardMonitor implements ClipboardOwner {
             // 说明不是要格式化代码，那就执行翻译操作
             if (! match) {
                 text = text.replaceAll("[\\r\\n]", " ");
-                log.debug("text = {}", text);
-                text = translateService.translate(text);
-                log.debug("translate = {}", text);
+                text = text.replaceAll("’", "'");
+                if (! ChineseUtil.isChinese(text)) {
+                    log.debug("text = {}", text);
+                    text = translateService.translate(text);
+                    log.debug("translate = {}", text);
+                }
             }
+
+            // 存入剪贴板，并注册自己为所有者
+            // 用以监控下一次剪贴板内容变化
+            StringSelection tmp = new StringSelection(text);
+            clipboard.setContents(tmp, this);
         }
-
-
-        // 存入剪贴板，并注册自己为所有者
-        // 用以监控下一次剪贴板内容变化
-        StringSelection tmp = new StringSelection(text);
-        clipboard.setContents(tmp, this);
     }
 }

@@ -27,3 +27,5 @@
 /mvnw.cmd
 /mvnw
 /.mvn/
+/upload/
+/log/

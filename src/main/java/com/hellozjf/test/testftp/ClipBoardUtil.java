@@ -14,16 +14,16 @@ import java.awt.datatransfer.Transferable;
 public class ClipBoardUtil {
 
     public static void main(String[] args) {
-        setSysClipboardText("复制的内容");
+        setSysClipboardText("复制的内容", null);
     }
 
     /**
      * 将字符串复制到剪切板。
      */
-    public static void setSysClipboardText(String writeMe) {
+    public static void setSysClipboardText(String writeMe, SystemClipboardMonitor systemClipboardMonitor) {
         Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
         Transferable tText = new StringSelection(writeMe);
-        clip.setContents(tText, null);
+        clip.setContents(tText, systemClipboardMonitor);
         log.debug("clip.setContents {}", writeMe);
     }
 

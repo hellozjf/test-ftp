@@ -5,6 +5,7 @@ import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPReply;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.FileInputStream;
@@ -21,6 +22,9 @@ import java.util.UUID;
 @Component
 @Slf4j
 public class FtpUtil {
+
+    @Autowired
+    private SystemClipboardMonitor systemClipboardMonitor;
 
     /**
      * 将文件上传到uuid目录，并更换文件名
@@ -76,7 +80,7 @@ public class FtpUtil {
 
             String clipboardText = "uuid/" + uuid + suffix;
             log.info("{} -> {}", filename, clipboardText);
-            ClipBoardUtil.setSysClipboardText(urlPrefix + clipboardText);
+            ClipBoardUtil.setSysClipboardText(urlPrefix + clipboardText, systemClipboardMonitor);
 
             ftp.logout();
         } catch (IOException e) {
@@ -185,7 +189,7 @@ public class FtpUtil {
 
             String clipboardText = year + "/" + month + "/" + day + "/" + filename;
             log.info("{} -> {}", filename, clipboardText);
-            ClipBoardUtil.setSysClipboardText(urlPrefix + clipboardText);
+            ClipBoardUtil.setSysClipboardText(urlPrefix + clipboardText, systemClipboardMonitor);
 
             ftp.logout();
         } catch (IOException e) {
