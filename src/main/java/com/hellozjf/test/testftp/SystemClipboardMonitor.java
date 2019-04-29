@@ -108,7 +108,8 @@ public class SystemClipboardMonitor implements ClipboardOwner {
                 text = text.replaceAll("[\\r\\n]", " ")
                         .replaceAll("’", "'")
                         .replaceAll("”", "\"")
-                        .replaceAll("“", "\"");
+                        .replaceAll("“", "\"")
+                        .replaceAll("—", "-");
                 if (! ChineseUtil.isChinese(text)) {
                     log.debug("text = {}", text);
                     text = translateService.translate(text);
