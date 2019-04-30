@@ -102,6 +102,7 @@ public class TestFtpApplication {
                                                TranslateService translateService,
                                                SystemClipboardMonitor systemClipboardMonitor) {
         return args -> {
+            log.debug("classpath = {}", System.getProperty("java.class.path"));
             startFtp(fileWatcher, customConfig, translateService, systemClipboardMonitor);
         };
     }

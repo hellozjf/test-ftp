@@ -1,15 +1,27 @@
 package com.hellozjf.test.testftp;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonArrayFormatVisitor;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.google.googlejavaformat.java.Formatter;
 import com.google.googlejavaformat.java.FormatterException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.*;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,6 +34,9 @@ public class SystemClipboardMonitor implements ClipboardOwner {
 
     @Autowired
     private TranslateService translateService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     private Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 
@@ -104,17 +119,35 @@ public class SystemClipboardMonitor implements ClipboardOwner {
             }
 
             // 说明不是要格式化代码，那就执行翻译操作
-            if (! match) {
-                text = text.replaceAll("[\\r\\n]", " ")
-                        .replaceAll("’", "'")
-                        .replaceAll("”", "\"")
-                        .replaceAll("“", "\"")
-                        .replaceAll("—", "-");
-                if (! ChineseUtil.isChinese(text)) {
-                    log.debug("text = {}", text);
-                    text = translateService.translate(text);
-                    log.debug("translate = {}", text);
+            try {
+                if (!match) {
+                    Resource resource = new FileSystemResource("conf/replace.json");
+                    InputStream inputStream = null;
+                    inputStream = resource.getInputStream();
+                    InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "utf-8");
+                    BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                    StringBuilder stringBuilder = new StringBuilder();
+                    String line = null;
+                    while ((line = bufferedReader.readLine()) != null) {
+                        stringBuilder.append(line);
+                    }
+                    log.debug("replace.json = {}", stringBuilder.toString());
+                    JsonNode jsonNode = objectMapper.readTree(stringBuilder.toString());
+                    Iterator<Map.Entry<String, JsonNode>> iterator = jsonNode.fields();
+                    while (iterator.hasNext()) {
+                        Map.Entry<String, JsonNode> entry = iterator.next();
+                        String key = entry.getKey();
+                        String value = entry.getValue().textValue();
+                        text = text.replaceAll(key, value);
+                    }
+                    if (!ChineseUtil.isChinese(text)) {
+                        log.debug("text = {}", text);
+                        text = translateService.translate(text);
+                        log.debug("translate = {}", text);
+                    }
                 }
+            } catch (Exception e) {
+                log.error("e = {}", e);
             }
 
             // 存入剪贴板，并注册自己为所有者

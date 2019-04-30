@@ -1,8 +1,11 @@
 package com.hellozjf.test.testftp;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author Jingfeng Zhou
  */
+@Slf4j
 public class ChineseUtil {
 
     public static boolean isChinese(String strName) {
@@ -10,6 +13,7 @@ public class ChineseUtil {
         for (int i = 0; i < ch.length; i++) {
             char c = ch[i];
             if (isChinese(c)) {
+                log.debug("chinese c = {}", c);
                 return true;
             }
         }
