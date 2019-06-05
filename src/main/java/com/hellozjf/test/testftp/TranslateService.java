@@ -36,45 +36,59 @@ public class TranslateService {
      * @return
      */
     public String translate(String q) {
-        HttpClient httpClient = HttpClient.newHttpClient();
-        String urlEncodeQ = null;
-        try {
-            urlEncodeQ = URLEncoder.encode(q, "utf-8");
-        } catch (UnsupportedEncodingException e) {
-            log.error("e = {}", e);
+        int retryCount = 3;
+        for (int i = 0; i < retryCount; i++) {
+            try {
+                HttpClient httpClient = HttpClient.newHttpClient();
+                String urlEncodeQ = null;
+                try {
+                    urlEncodeQ = URLEncoder.encode(q, "utf-8");
+                } catch (UnsupportedEncodingException e) {
+                    log.error("e = {}", e);
+                }
+                String md5 = null;
+                try {
+                    md5 = DigestUtils.md5DigestAsHex((baiduConfig.getAppid() + q + baiduConfig.getSalt() + baiduConfig.getKey()).getBytes("utf-8")).toLowerCase();
+                } catch (UnsupportedEncodingException e) {
+                    log.error("e = {}", e);
+                    return q;
+                }
+                String form = String.format("q=%s&from=%s&to=%s&appid=%s&salt=%s&sign=%s",
+                        urlEncodeQ, "en", "zh", baiduConfig.getAppid(), baiduConfig.getSalt(), md5);
+                log.debug("form = {}", form);
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create("https://fanyi-api.baidu.com/api/trans/vip/translate"))
+                        .header("Content-Type", "application/x-www-form-urlencoded")
+                        .POST(HttpRequest.BodyPublishers.ofString(form))
+                        .build();
+                HttpResponse<String> response = null;
+                try {
+                    response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                } catch (Exception e) {
+                    log.error("e = {}", e);
+                    return q;
+                }
+                String body = response.body();
+                JsonNode node = null;
+                try {
+                    log.debug("body = {}", body);
+                    node = objectMapper.readTree(body);
+                    log.debug("node = {}", node);
+                } catch (IOException e) {
+                    log.error("e = {}", e);
+                    return q;
+                }
+                ArrayNode arrayNode = (ArrayNode) node.get("trans_result");
+                if (arrayNode == null) {
+                    return q;
+                }
+                String dst = arrayNode.get(0).get("dst").asText();
+                log.debug("dst = {}", dst);
+                return dst;
+            } catch (Exception e) {
+                log.error("e = {}", e);
+            }
         }
-        String md5 = DigestUtils.md5DigestAsHex((baiduConfig.getAppid() + q + baiduConfig.getSalt() + baiduConfig.getKey()).getBytes()).toLowerCase();
-        String form = String.format("q=%s&from=%s&to=%s&appid=%s&salt=%s&sign=%s",
-                urlEncodeQ, "en", "zh", baiduConfig.getAppid(), baiduConfig.getSalt(), md5);
-        log.debug("form = {}", form);
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://fanyi-api.baidu.com/api/trans/vip/translate"))
-                .header("Content-Type","application/x-www-form-urlencoded")
-                .POST(HttpRequest.BodyPublishers.ofString(form))
-                .build();
-        HttpResponse<String> response = null;
-        try {
-            response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (Exception e) {
-            log.error("e = {}", e);
-            return null;
-        }
-        String body = response.body();
-        JsonNode node = null;
-        try {
-            log.debug("body = {}", body);
-            node = objectMapper.readTree(body);
-            log.debug("node = {}", node);
-        } catch (IOException e) {
-            log.error("e = {}", e);
-            return q;
-        }
-        ArrayNode arrayNode = (ArrayNode) node.get("trans_result");
-        if (arrayNode == null) {
-            return q;
-        }
-        String dst = arrayNode.get(0).get("dst").asText();
-        log.debug("dst = {}", dst);
-        return dst;
+        return "翻译服务请求超时";
     }
 }
